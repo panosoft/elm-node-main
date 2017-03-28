@@ -4,7 +4,7 @@
 
 ## Install
 
-There's no installation necessary, this is a boilerplate file that can be used as the entry point for all Server-side Elm programs.
+There's no installation necessary, this is a boilerplate file that can be used as the entry point for all Server-side or command line based Elm programs.
 
 ## Usage
 
@@ -24,7 +24,7 @@ port module YourApp exposing (..)
 Then your Elm code can initiate a controlled shutdown by writing the exit code to a port called `node`:
 
 ```elm
-port node : Float -> Cmd msg
+port exitApp : Float -> Cmd msg
 ```
 
 When it's time to exit, your `update` function can do the following:
@@ -35,13 +35,16 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
 		SomeEvent ->
-			(model, node 1)
+			(model, exitApp 1)
 ```
+See `YourApp.elm` code for more usage details.
+
+## SIGINT and SIGTERM
+
+These OS signals will send a message to your program. In the case of the test app, `YourApp.elm`, an `Abort` message is sent. Then the `exitApp` Cmd is returned from `update` with a parameter of -1 which will be returned to the OS.
+
+This approach allows your Elm code to shutdown cleanly and allows you Elm code to always be in control.
 
 ## Exit Handlers
 
-Besides the Elm exit handler, it also has a handler for:
-
-* Unhandled Exceptions
-* SIGINT
-* SIGTERM
+Besides the Elm exit handler, it also has a handler for Unhandled Exceptions which returns 1 to the OS. This is useful if you've written or used any badly behaved Javascript code.
